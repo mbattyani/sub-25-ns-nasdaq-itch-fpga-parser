@@ -18,7 +18,7 @@ General Public License for more details.
 #+END_QUOTE
 
 #+BEGIN_abstract
-
+That's as fast as going through 5m (16.4ft) of optical fiber cable
 #+END_abstract
 
 
@@ -55,10 +55,10 @@ To fill that void, I’ve decided to share this document and associated code for
    - Transmits these commands in 1 clock cycle to the next FPGA cores as a AXI stream
    - All that is fully pipelined and takes 8 clock cycles that is 24.8 nanoseconds
 
-** How fast is it? - As fast as 5 meters (16.4 ft) of cable
+** How fast is it? - As fast as going through 5 meters (16.4 ft) of cable
 In FPGA designs there are 2 important parameters: Bandwidth and pipeline latency
 
-The bandwidth is easy; it's how much data we get per second. Here we get that data from a 10Gbit/s Ethernet connection which is 1.25 GBytes/s. For instance a 125 bytes packet is transmitted in 1 microsecond.
+The bandwidth is easy; it's how much data we get per second. Here we get that data from a 10Gbit/s Ethernet connection which is 1.25 GBytes/s. For instance a 125 bytes packet (1000 bits) is transmitted in 100 nanoseconds.
 
 Latency is how long it takes for the command to be output from the time the data has arrived. The reason why it's a little bit more tricky is that as we are decoding the data from the 10Gbit/s Ethernet connection as soon as we get those bytes and we don't even wait for the end of the packet. Thus we can't measure the latency from the time the packet has arrived because we have already decoded and output the commands on the fly while the packet bytes were arriving.
 
@@ -66,16 +66,15 @@ Here we measure the latency from the arrival of the last byte of a message to th
 
 *As an illustration of how fast that 24.8ns is, the light can only travel by around 7.45 meters (24.44 ft) in that time. In an optical fiber cable the speed of light is around 30% slower and 24.8ns is equivalent to 5 meters (16.4 ft) of cable.*
 
-#+CAPTION: TBD
 [[./timings.png]]
-
+On that simulation the first cursor is where the price arrives in the incoming ethernet packet and the second cursor (24.8ns later) is when that price is fully decoded and output to the next core.
 
 ** The following stages of the trading pipeline
 Once the messages have been decoded into commands the next stages can vary a lot depending on the application. The commands can be used to build the order book, to compute various indicators or indexes and to trigger actions. That second stage typically has a latency of a few 10's of ns too.
 
 The last stage would be to send orders to the exchanges. The latency of that stage depends on the exchange protocols, the checks and controls, etc.
 
-The trading full loop can be as fast as a few 100's of nanoseconds
+The full trading loop can be as fast as a few 100's of nanoseconds
 
 * Part II - The code for that FPGA parser
 ** The need for a specialized compiler
